@@ -1,0 +1,70 @@
+﻿@using _210310SimchaFund.Data
+@model SimchaListViewModel
+
+    <h1>Simchas</h1>
+    <div class="row header">
+        <div class="col-md-4" style="margin-bottom: 5px">
+            <button class="btn btn-outline-danger btn-block" id="new-simcha">New Simcha</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Contributions</th>
+                    <th>Simcha Name</th>
+                    <th>Contributor Count</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Simcha simcha in Model.Simchas)
+                {
+                    <tr>
+                        <td><a class="btn btn-primary btn-block" href="/simchas/contributions?simchaid=@simcha.Id">Contributions</a></td>
+                        <td>@simcha.Name</td>
+                        <td>@simcha.Contributors / @Model.ContributorCount</td>
+                        <td>@simcha.TotalContributed.ToString("C")</td>
+                        <td>@simcha.Date.ToLongDateString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Simcha</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/simchas/new">
+                        <div class="form-group">
+                            <label>Simcha Name</label>
+                            <input class="form-control" name="name" placeholder="Simcha Name" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" name="date" class="form-control" id="datepicker">
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" name="commit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    @section scripts
+{
+        <script src="~/js/simchas-index.js"></script>
+    }

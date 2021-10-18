@@ -1,0 +1,61 @@
+﻿@using _210310SimchaFund.Data
+@model ContributionsViewModel
+
+@section css {
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+}
+<div class="header">
+    <h1>Contributors for the @Model.Simcha.Name simcha</h1>
+</div>
+
+<form method="post" action="/simchas/updatecontributions">
+    <input type="hidden" name="simchxaId" value="@Model.Simcha.Id" />
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr style="text-align: center;">
+                    <th>Contribute</th>
+                    <th>Name</th>
+                    <th>Balance</th>
+                    <th>Always Include</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{int i = 0;}
+                @foreach (SimchaContributor simchaContributor in Model.SimchaContributors.OrderByDescending(c => c.LastName))
+                {
+                    <input type="hidden" name="contributionToSimchas[@i].simchaId" value="@Model.Simcha.Id" />
+                    <input name="contributionToSimchas[@i].ContributorId" type="hidden" value="@simchaContributor.ContributorId" />
+                    <tr style="text-align: center;">
+                        <td>
+                            <input class="contribute" type="checkbox" data-on="Yes" data-off="No" data-toggle="toggle" data-style="slow"
+                                  @( simchaContributor.Amount != null ? "checked=checked" : "") value="true" name="contributionToSimchas[@i].Include"  />
+                        </td>
+                        <td>@($"{simchaContributor.FirstName} {simchaContributor.LastName}")</td>
+                        <td>@simchaContributor.Balance.ToString("C")</td>
+                        <td style="text-align: center;">
+                            @if (@simchaContributor.AlwaysInclude)
+                            {
+                                <span style="font-size: 25px;" class="oi oi-check"></span>
+                            }
+                        </td>
+                        <td><input class="form-control" type="text" name="contributionToSimchas[@i].Amount" value="@(simchaContributor.Amount > 0 ?  Convert.ToDecimal(simchaContributor.Amount).ToString("C") : "$5.00")" /> </td>
+                    </tr>
+                    { i++; }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:center">
+        <button class="btn btn-danger">Update Contributions</button>
+    </div>
+</form>
+
+@section scripts
+{
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src="~/js/simchas-contributions.js"></script>
+}
