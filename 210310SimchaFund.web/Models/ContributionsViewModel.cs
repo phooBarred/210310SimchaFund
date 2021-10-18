@@ -10,6 +10,5 @@ namespace _210310SimchaFund.web.Models
     {
         public List<SimchaContributor> SimchaContributors { get; set; }
         public Simcha Simcha { get; set; }
-
     }
 }

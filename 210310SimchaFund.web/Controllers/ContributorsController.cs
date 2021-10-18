@@ -18,6 +18,11 @@ namespace _210310SimchaFund.web.Controllers
             cvm.Contributors = cm.GetContributors();
             cvm.TotalContributed = cm.GetTotalContributed();
 
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+            }
+
             return View(cvm);
         }
 
@@ -41,6 +46,8 @@ namespace _210310SimchaFund.web.Controllers
                 Amount = initialDeposit
             };
             cm.NewDeposit(deposit);
+
+            TempData["Message"] = $"{contributor.FirstName} {contributor.LastName} added as a new contributor!";
             return RedirectToAction("index");
         }
 

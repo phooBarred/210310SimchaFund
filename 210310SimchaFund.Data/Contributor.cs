@@ -16,5 +16,4 @@ namespace _210310SimchaFund.Data
         public bool AlwaysInclude { get; set; }
         public decimal Balance { get; set; }
     }
-
 }

@@ -9,7 +9,7 @@ namespace _210310SimchaFund.Data
 {
     public class SimchasManager
     {
-        private string _connectionString;
+        private readonly string _connectionString;
 
         public SimchasManager(string connectionString)
         {
@@ -31,7 +31,7 @@ namespace _210310SimchaFund.Data
 
                 while (reader.Read())
                 {
-                    Simcha s = new Simcha
+                    Simcha s = new()
                     {
                         Id = (int)reader["Id"],
                         Name = (string)reader["Name"],
@@ -79,7 +79,6 @@ namespace _210310SimchaFund.Data
 
         public int GetContributorsCount()
         {
-
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
@@ -87,12 +86,10 @@ namespace _210310SimchaFund.Data
                 conn.Open();
                 return (int)cmd.ExecuteScalar();
             }
-
         }
 
         public decimal GetContributedToSimchaAmount(int simchaId)
         {
-
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
@@ -101,7 +98,6 @@ namespace _210310SimchaFund.Data
                 conn.Open();
                 return (decimal)cmd.ExecuteScalar();
             }
-
         }
 
         public List<SimchaContributor> GetSimchaContributors(int simchaId)
@@ -111,7 +107,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT * FROM Contributions WHERE SimchaId = @simchaId";
+                cmd.CommandText = "SELECT * FROM Contributions WHERE SimchaId = @simchaId";
                 cmd.Parameters.AddWithValue("@simchaId", simchaId);
                 conn.Open();
                 var reader = cmd.ExecuteReader();
@@ -124,7 +120,7 @@ namespace _210310SimchaFund.Data
                     c.Date = (DateTime)reader["Date"];
                     contributions.Add(c);
                 }
-                return contributors.Select(contributor =>
+                return contributors.ConvertAll(contributor =>
                 {
                     var sc = new SimchaContributor
                     {
@@ -142,14 +138,13 @@ namespace _210310SimchaFund.Data
                     }
 
                     return sc;
-                }).ToList();
+                });
             }
-
         }
 
         public Simcha GetSimcha(int id)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = @"SELECT * FROM Simchas
@@ -199,7 +194,6 @@ namespace _210310SimchaFund.Data
                     c.Date = (DateTime)reader["Date"];
                     contributions.Add(c);
                 }
-
             }
             return contributions;
         }
@@ -211,7 +205,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT * FROM Deposits WHERE Id = @id";
+                cmd.CommandText = "SELECT * FROM Deposits WHERE Id = @id";
 
                 cmd.Parameters.AddWithValue("@id", id);
                 var reader = cmd.ExecuteReader();
@@ -234,11 +228,11 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT INTO Simchas (Name, Date) VALUES(@name, @date)";
+                cmd.CommandText = "INSERT INTO Simchas (Name, Date) VALUES(@name, @date) SELECT SCOPE_IDENTITY()";
                 cmd.Parameters.AddWithValue("@name", simcha.Name);
                 cmd.Parameters.AddWithValue("@date", simcha.Date);
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                simcha.Id = (int)(decimal)cmd.ExecuteScalar();
             }
         }
 
@@ -276,10 +270,10 @@ namespace _210310SimchaFund.Data
 
         public void UpdateContributions(List<ContributionToSimcha> contributionToSimchas)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new(_connectionString))
             using (SqlCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = @"DELETE from Contributions where SimchaId = @simchaId";
+                cmd.CommandText = "DELETE from Contributions where SimchaId = @simchaId";
                 cmd.Parameters.AddWithValue("@simchaId", contributionToSimchas[0].SimchaId);
 
                 connection.Open();
@@ -301,7 +295,6 @@ namespace _210310SimchaFund.Data
                         cmd.ExecuteNonQuery();
                     }
                 }
-
             }
         }
         public void AddDeposit(Deposit deposit)
@@ -318,7 +311,5 @@ namespace _210310SimchaFund.Data
                 cmd.ExecuteNonQuery();
             }
         }
-
-
     }
 }

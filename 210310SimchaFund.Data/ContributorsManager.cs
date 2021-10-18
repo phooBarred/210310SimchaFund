@@ -9,7 +9,7 @@ namespace _210310SimchaFund.Data
 {
     public class ContributorsManager
     {
-        private string _connectionString;
+        private readonly string _connectionString;
 
         public ContributorsManager(string connectionString)
         {
@@ -31,7 +31,7 @@ namespace _210310SimchaFund.Data
 
                 while (reader.Read())
                 {
-                    Contributor c = new Contributor
+                    Contributor contributor = new()
                     {
                         Id = (int)reader["Id"],
                         FirstName = (string)reader["FirstName"],
@@ -41,7 +41,7 @@ namespace _210310SimchaFund.Data
                         AlwaysInclude = (bool)reader["AlwaysInclude"],
                         Balance = reader.GetOrNull<decimal>("Balance")
                     };
-                    contributors.Add(c);
+                    contributors.Add(contributor);
                 }
 
                 return contributors;
@@ -66,7 +66,6 @@ namespace _210310SimchaFund.Data
 
                 conn.Open();
                 return (decimal)cmd.ExecuteScalar();
-
             }
         }
 
@@ -112,7 +111,7 @@ namespace _210310SimchaFund.Data
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Transaction transaction = new Transaction
+                    Transaction transaction = new()
                     {
                         Action = (string)reader["Action"],
                         Amount = (decimal)reader["Amount"],
@@ -120,7 +119,7 @@ namespace _210310SimchaFund.Data
                     };
                     transactions.Add(transaction);
                 }
-                
+
                 return transactions;
             }
         }
@@ -130,7 +129,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $@"INSERT INTO Contributors (FirstName, LastName, Cell, CreatedDate, AlwaysInclude)
+                cmd.CommandText = @"INSERT INTO Contributors (FirstName, LastName, Cell, CreatedDate, AlwaysInclude)
                                 VALUES (@firstName, @lastName, @cell, @createdDate, @alwaysInclude) SELECT SCOPE_IDENTITY()";
 
                 cmd.Parameters.AddWithValue("@firstName", contributor.FirstName);
@@ -148,7 +147,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $@"UPDATE Contributors 
+                cmd.CommandText = @"UPDATE Contributors 
                                     SET FirstName = @firstName, LastName = @lastName, Cell = @cell, 
                                         CreatedDate = @createdDate, AlwaysInclude = @alwaysInclude
                                     WHERE Id = @id";
@@ -169,7 +168,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $@"INSERT INTO Deposits (ContributorId, Amount, Date)
+                cmd.CommandText = @"INSERT INTO Deposits (ContributorId, Amount, Date)
                                 VALUES (@contributorId, @amount, @date)";
 
                 cmd.Parameters.AddWithValue("@contributorId", deposit.ContributorId);
@@ -179,6 +178,5 @@ namespace _210310SimchaFund.Data
                 cmd.ExecuteNonQuery();
             }
         }
-
     }
 }

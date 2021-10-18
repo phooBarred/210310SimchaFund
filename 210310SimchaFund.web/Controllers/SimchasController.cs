@@ -12,14 +12,20 @@ namespace _210310SimchaFund.web.Controllers
 {
     public class SimchasController : Controller
     {
-        private string _connectionString = @"Data Source=.\sqlexpress;Initial Catalog=SimchaFund;Integrated Security=true;";
+        private readonly string _connectionString = @"Data Source=.\sqlexpress;Initial Catalog=SimchaFund;Integrated Security=true;";
 
         public IActionResult Index()
         {
-            SimchaListViewModel vm = new SimchaListViewModel();
+            SimchaListViewModel vm = new();
             SimchasManager manager = new(_connectionString);
             vm.Simchas = manager.GetSimchas();
             vm.ContributorCount = manager.GetContributorsCount();
+
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+            }
+
             return View(vm);
         }
 
@@ -36,7 +42,7 @@ namespace _210310SimchaFund.web.Controllers
         [HttpPost]
         public IActionResult UpdateContributions(List<ContributionToSimcha> contributionToSimchas)
         {
-            SimchasManager manager = new SimchasManager(_connectionString);
+            SimchasManager manager = new(_connectionString);
             manager.UpdateContributions(contributionToSimchas);
 
             return RedirectToAction("index");
@@ -47,8 +53,9 @@ namespace _210310SimchaFund.web.Controllers
             SimchasManager manager = new(_connectionString);
             manager.AddSimcha(simcha);
 
+            TempData["Message"] = $"Simcha Added! Id #: {simcha.Id}";
+
             return RedirectToAction("index");
         }
-
     }
 }
