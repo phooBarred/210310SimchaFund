@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using _210310SimchaFund.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Globalization;
+using System.Linq;
 
 namespace _210310SimchaFund.Data
 {
@@ -22,7 +21,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT *, 
+                cmd.CommandText = @"SELECT *,
                                 (SELECT COUNT(*) FROM Contributions WHERE SimchaId = s.Id) as Contributors,
                                 (SELECT ISNULL(SUM(Amount), 0)*-1 FROM Contributions WHERE SimchaId = s.Id) as TotalContributed
                                 FROM Simchas s";
@@ -53,10 +52,10 @@ namespace _210310SimchaFund.Data
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 //cmd.CommandText = @"SELECT * FROM Contributors";
-                cmd.CommandText = @"SELECT *, 
-                                    (SELECT ISNULL(SUM(cs.Amount), 0) FROM Contributions cs WHERE cs.ContributorId = c.Id) 
-                                    + 
-                                    (SELECT ISNULL(SUM(d.Amount), 0) FROM Deposits d WHERE d.ContributorId = c.Id) AS Balance 
+                cmd.CommandText = @"SELECT *,
+                                    (SELECT ISNULL(SUM(cs.Amount), 0) FROM Contributions cs WHERE cs.ContributorId = c.Id)
+                                    +
+                                    (SELECT ISNULL(SUM(d.Amount), 0) FROM Deposits d WHERE d.ContributorId = c.Id) AS Balance
                                     FROM Contributors c";
                 conn.Open();
                 var reader = cmd.ExecuteReader();
@@ -131,7 +130,7 @@ namespace _210310SimchaFund.Data
                         Balance = contributor.Balance
                     };
 
-                    Contribution contribution = contributions.FirstOrDefault(c => c.ContributorId == sc.ContributorId);
+                     Contribution contribution = contributions.FirstOrDefault(c => c.ContributorId == sc.ContributorId);
                     if (contribution != null)
                     {
                         sc.Amount = contribution.Amount;
@@ -177,7 +176,7 @@ namespace _210310SimchaFund.Data
             using (SqlConnection conn = new(_connectionString))
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT c.*, s.Name FROM Contributions c  
+                cmd.CommandText = @"SELECT c.*, s.Name FROM Contributions c
                                 LEFT JOIN Simchas s
                                 ON c.SimchaId = s.Id
                                 WHERE c.ContributorId = @id";
@@ -252,6 +251,7 @@ namespace _210310SimchaFund.Data
                 cmd.ExecuteNonQuery();
             }
         }
+
         public void AddContribution(Contribution contribution)
         {
             using (SqlConnection conn = new(_connectionString))
@@ -297,6 +297,7 @@ namespace _210310SimchaFund.Data
                 }
             }
         }
+
         public void AddDeposit(Deposit deposit)
         {
             using (SqlConnection conn = new(_connectionString))

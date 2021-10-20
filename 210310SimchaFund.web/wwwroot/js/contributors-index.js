@@ -9,6 +9,7 @@
         });
     });
 
+
     $("#clear").on('click', function () {
         $('#search').val('');
         $('tr').show();
@@ -26,6 +27,21 @@
     });
 
     $('#new-contributor').on('click', () => {
+
+        const form = $(".new-contrib form");
+        form.attr("action", "/contributors/new");
+
+        const title = form.parent().find('h5');
+        title.html('New Contributor');
+
+        form.find("#edit-id").remove();
+        $('#contributor_first_name').val('');
+        $('#contributor_last_name').val('');
+        $('#contributor_cell_number').val('');
+        $('#contributor_created_at').val((new Date()).toISOString().split('T')[0]);
+        $('#contributor_always_include').prop('checked', '');
+
+        $('#initialDepositDiv').show();
         $('.new-contrib').modal();
     });
 
@@ -39,6 +55,9 @@
 
         const form = $(".new-contrib form");
         form.attr("action", "/contributors/edit");
+
+        const title = form.parent().find('h5');
+        title.html('Edit Contributor');
 
         form.find("#edit-id").remove();
         const hidden = `<input type="hidden" id="edit-id" name="id" value="${id}" />`;

@@ -31,7 +31,8 @@
                     <tr style="text-align: center;">
                         <td>
                             <input class="contribute" type="checkbox" data-on="Yes" data-off="No" data-toggle="toggle" data-style="slow"
-                                  @( simchaContributor.Amount != null ? "checked=checked" : "") value="true" name="contributionToSimchas[@i].Include"  />
+                                @( simchaContributor.Amount != null ? "checked=checked" : "") 
+                                value="true" name="contributionToSimchas[@i].Include"  />
                         </td>
                         <td>@($"{simchaContributor.FirstName} {simchaContributor.LastName}")</td>
                         <td>@simchaContributor.Balance.ToString("C")</td>
